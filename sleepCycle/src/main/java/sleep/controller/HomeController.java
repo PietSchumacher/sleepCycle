@@ -36,9 +36,4 @@ public class HomeController {
     }
 
 
-
-    @PostMapping("/login")
-    public String login(@RequestParam LoginDto loginDto) {
-        return "redirect:/?error=true";
-    }
 }
