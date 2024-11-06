@@ -20,7 +20,8 @@ public class SleepSession {
     private Integer duration;
     private Integer cycles;
     private String personalEvaluation;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")
     private SleepPerson person;
+
 }

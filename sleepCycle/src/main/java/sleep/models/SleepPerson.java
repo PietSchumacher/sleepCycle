@@ -21,7 +21,7 @@ public class SleepPerson {
     private String email;
     private Integer age;
     private Integer weight;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "person_id")
-    private List<SleepSession> sessions;
+    private List<SleepSession> sessions = new ArrayList<SleepSession>();
 }

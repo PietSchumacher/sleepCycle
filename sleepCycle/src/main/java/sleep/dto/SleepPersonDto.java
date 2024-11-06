@@ -7,7 +7,6 @@ import java.util.List;
 
 @Data
 public class SleepPersonDto {
-    private int id;
     private String name;
     private String email;
     private Integer age;
