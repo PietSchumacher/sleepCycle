@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sleep.dto.SleepPersonDto;
 import sleep.dto.SleepSessionDto;
+import sleep.exceptions.SleepPersonNotFoundException;
 import sleep.exceptions.SleepSessionNotFoundException;
 import sleep.models.SleepPerson;
 import sleep.models.SleepSession;
@@ -25,10 +26,12 @@ public class SleepSessionServiceImpl implements SleepSessionService {
     }
 
     @Override
-    public SleepSessionDto createSleepSession(SleepSessionDto sessionDto){
+    public SleepSessionDto createSleepSession(SleepSessionDto sessionDto, Integer personId){
         SleepSession session = mapToObject(sessionDto);
+        SleepPerson person = personRepository.findById(Long.valueOf(personId)).orElseThrow(() -> new SleepPersonNotFoundException("Person konnte nicht gefunden werden!"));
+        session.setPerson(person);
         SleepSession newSession = sessionRepository.save(session);
-        return sessionDto;
+        return mapToDto(newSession);
     }
 
     @Override
@@ -38,14 +41,15 @@ public class SleepSessionServiceImpl implements SleepSessionService {
     }
 
     @Override
-    public SleepSessionDto updateSleepSession(SleepSessionDto sessionDto, Integer id){
+    public SleepSessionDto updateSleepSession(SleepSessionDto sessionDto, Integer id, Integer personId){
         SleepSession session = sessionRepository.findById((long) id).orElseThrow(() -> new SleepSessionNotFoundException("Session konnte nicht geupdated werden!"));
         session.setStartTime(sessionDto.getStartTime());
         session.setEndTime(sessionDto.getEndTime());
         session.setDuration(sessionDto.getDuration());
         session.setCycles(sessionDto.getCycles());
         session.setPersonalEvaluation(sessionDto.getPersonalEvaluation());
-        session.setPerson(sessionDto.getPerson());
+        SleepPerson sleepPerson = personRepository.findById(Long.valueOf(personId)).orElseThrow(() -> new SleepPersonNotFoundException("Eine zutreffende Person konnte nicht gefunden werden"));
+        session.setPerson(sleepPerson);
         sessionRepository.save(session);
         return sessionDto;
     }
@@ -58,23 +62,24 @@ public class SleepSessionServiceImpl implements SleepSessionService {
 
     static SleepSessionDto mapToDto(SleepSession session){
         SleepSessionDto sessionDto = new SleepSessionDto();
+        sessionDto.setId(session.getId());
         sessionDto.setStartTime(session.getStartTime());
         sessionDto.setEndTime(session.getEndTime());
         sessionDto.setDuration(session.getDuration());
         sessionDto.setCycles(session.getCycles());
         sessionDto.setPersonalEvaluation(session.getPersonalEvaluation());
-        sessionDto.setPerson(session.getPerson());
+        sessionDto.setPersonId(session.getPerson().getId());
         return sessionDto;
     }
 
-    private SleepSession mapToObject(SleepSessionDto sessionDto){
+    static SleepSession mapToObject(SleepSessionDto sessionDto){
         SleepSession session = new SleepSession();
+        session.setId(sessionDto.getId());
         session.setStartTime(sessionDto.getStartTime());
         session.setEndTime(sessionDto.getEndTime());
         session.setDuration(sessionDto.getDuration());
         session.setCycles(sessionDto.getCycles());
         session.setPersonalEvaluation(sessionDto.getPersonalEvaluation());
-        session.setPerson(sessionDto.getPerson());
         return session;
     }
 

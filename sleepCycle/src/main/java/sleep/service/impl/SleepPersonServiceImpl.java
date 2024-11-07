@@ -16,6 +16,8 @@ import sleep.repository.SleepSessionRepository;
 import sleep.service.SleepPersonService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,7 +53,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());
-        person.setSessions(personDto.getSessions());
+        updateSessions(person, personDto.getSessions());
         personRepository.save(person);
         return personDto;
     }
@@ -83,24 +85,48 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         return sessionResponse;
     }
 
-    private SleepPersonDto mapToDto(SleepPerson person){
+    static SleepPersonDto mapToDto(SleepPerson person){
         SleepPersonDto personDto = new SleepPersonDto();
+        personDto.setId(person.getId());
         personDto.setAge(person.getAge());
         personDto.setWeight(person.getWeight());
         personDto.setName(person.getName());
-        personDto.setSessions(person.getSessions());
+        personDto.setSessions(person.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToDto(session)).collect(Collectors.toList()));
         personDto.setEmail(person.getEmail());
         return personDto;
     }
 
-    private SleepPerson mapToObject(SleepPersonDto personDto){
+    static SleepPerson mapToObject(SleepPersonDto personDto){
         SleepPerson person = new SleepPerson();
+        person.setId(person.getId());
         person.setAge(personDto.getAge());
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());
-        person.setSessions(personDto.getSessions());
+        person.setSessions(personDto.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToObject(session)).collect(Collectors.toList()));
         return person;
     }
 
+    private void updateSessions(SleepPerson person, List<SleepSessionDto> sessionDtos) {
+        List<SleepSession> currentSessions = person.getSessions();
+
+        currentSessions.removeIf(session -> sessionDtos.contains(session));
+
+        for (SleepSessionDto sessionDto : sessionDtos) {
+            SleepSession currentSession = currentSessions.stream()
+                    .filter(s -> s.getId() == sessionDto.getId())
+                    .findFirst()
+                    .orElseGet(() -> {
+                        SleepSession newSession = new SleepSession();
+                        newSession.setPerson(person);
+                        currentSessions.add(newSession);
+                        return newSession;
+                    });
+            currentSession.setStartTime(sessionDto.getStartTime());
+            currentSession.setEndTime(sessionDto.getEndTime());
+            currentSession.setDuration(sessionDto.getDuration());
+            currentSession.setCycles(sessionDto.getCycles());
+            currentSession.setPersonalEvaluation(sessionDto.getPersonalEvaluation());
+        }
+    }
 }

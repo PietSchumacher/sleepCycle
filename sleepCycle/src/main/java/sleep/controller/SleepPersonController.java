@@ -14,7 +14,8 @@ import sleep.service.impl.SleepPersonServiceImpl;
 
 import java.util.List;
 
-@RestController("/api/person")
+@RestController
+@RequestMapping("/api/person/")
 public class SleepPersonController {
 
     private SleepPersonService personService;
@@ -24,7 +25,7 @@ public class SleepPersonController {
         this.personService = personService;
     }
 
-    @GetMapping("?{id}")
+    @GetMapping("{id}")
     public ResponseEntity<SleepPersonDto> getSleepPerson(@PathVariable Integer id) {
         return ResponseEntity.ok(personService.getSleepPerson(id));
     }
@@ -34,18 +35,18 @@ public class SleepPersonController {
         return new ResponseEntity<>(personService.createSleepPerson(person), HttpStatus.CREATED);
     }
 
-    @PutMapping("?{id}/update")
+    @PutMapping("{id}/update")
     public ResponseEntity<SleepPersonDto> updateSleepPerson(@RequestBody SleepPersonDto person, @PathVariable("id") int personId){
         return ResponseEntity.ok(personService.updateSleepPerson(person, personId));
     }
 
-    @PostMapping("/delete")
+    @PostMapping("{id}/delete")
     public ResponseEntity<String> deleteSleepPerson(@PathVariable("id") int personId){
         personService.deleteSleepPerson(personId);
         return ResponseEntity.ok("Person wurde erfolgreich gelöscht");
     }
 
-    @GetMapping("?{id}/getSessions")
+    @GetMapping("{id}/getSessions")
     public ResponseEntity<SleepSessionResponse> getAllSessions(@PathVariable Integer id,
                                                @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){

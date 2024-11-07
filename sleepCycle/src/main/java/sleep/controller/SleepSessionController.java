@@ -9,7 +9,8 @@ import sleep.models.SleepPerson;
 import sleep.models.SleepSession;
 import sleep.service.SleepSessionService;
 
-@RestController("/api")
+@RestController
+@RequestMapping("/api/")
 public class SleepSessionController {
 
     private SleepSessionService sessionService;
@@ -19,22 +20,22 @@ public class SleepSessionController {
         this.sessionService = sessionService;
     }
 
-    @GetMapping("session?{id}")
+    @GetMapping("session/{id}")
     public ResponseEntity<SleepSessionDto> getSleepSession(@PathVariable Integer id) {
         return ResponseEntity.ok(sessionService.getSleepSession(id));
     }
 
-    @PostMapping("session/create")
-    public ResponseEntity<SleepSessionDto> createSleepSession(@RequestBody SleepSessionDto session){
-        return new ResponseEntity<>(sessionService.createSleepSession(session), HttpStatus.CREATED);
+    @PostMapping("person/{personId}/session/create")
+    public ResponseEntity<SleepSessionDto> createSleepSession(@PathVariable("personId") Integer personId, @RequestBody SleepSessionDto session){
+        return new ResponseEntity<>(sessionService.createSleepSession(session, personId), HttpStatus.CREATED);
     }
 
-    @PutMapping("session?{id}/update")
-    public ResponseEntity<SleepSessionDto> updateSleepSession(@RequestBody SleepSessionDto session, @PathVariable("id") int sessionId){
-        return ResponseEntity.ok(sessionService.updateSleepSession(session,sessionId));
+    @PutMapping("person/{personId}/session/{id}/update")
+    public ResponseEntity<SleepSessionDto> updateSleepSession(@PathVariable("personId") Integer personId, @RequestBody SleepSessionDto session, @PathVariable("id") int sessionId){
+        return ResponseEntity.ok(sessionService.updateSleepSession(session,sessionId, personId));
     }
 
-    @PostMapping("session/delete")
+    @PostMapping("session/{id}/delete")
     public ResponseEntity<String> deleteSleepSession(@PathVariable("id") int sessionId){
         sessionService.deleteSleepSession(sessionId);
         return ResponseEntity.ok("Session wurde erfolgreich gelöscht");
