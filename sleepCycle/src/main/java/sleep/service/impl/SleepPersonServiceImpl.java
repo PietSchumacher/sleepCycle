@@ -17,6 +17,7 @@ import sleep.service.SleepPersonService;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,6 @@ public class SleepPersonServiceImpl implements SleepPersonService {
     private SleepSessionRepository sessionRepository;
     private SleepPersonRepository personRepository;
 
-    @Autowired
     public SleepPersonServiceImpl(final SleepSessionRepository sessionRepository, final SleepPersonRepository personRepository) {
         this.sessionRepository = sessionRepository;
         this.personRepository = personRepository;
@@ -55,6 +55,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         person.setWeight(personDto.getWeight());
         updateSessions(person, personDto.getSessions());
         personRepository.save(person);
+        System.out.println(person.getSessions().size());
         return personDto;
     }
 
@@ -110,7 +111,11 @@ public class SleepPersonServiceImpl implements SleepPersonService {
     private void updateSessions(SleepPerson person, List<SleepSessionDto> sessionDtos) {
         List<SleepSession> currentSessions = person.getSessions();
 
-        currentSessions.removeIf(session -> sessionDtos.contains(session));
+        Set<Integer> sessionDtoIds = sessionDtos.stream()
+                .map(SleepSessionDto::getId)
+                .collect(Collectors.toSet());
+
+        currentSessions.removeIf(session -> !sessionDtoIds.contains(session.getId()));
 
         for (SleepSessionDto sessionDto : sessionDtos) {
             SleepSession currentSession = currentSessions.stream()

@@ -19,7 +19,6 @@ public class SleepSessionServiceImpl implements SleepSessionService {
     private SleepSessionRepository sessionRepository;
     private SleepPersonRepository personRepository;
 
-    @Autowired
     public SleepSessionServiceImpl(final SleepPersonRepository personRepository, final SleepSessionRepository sessionRepository) {
         this.personRepository = personRepository;
         this.sessionRepository = sessionRepository;
@@ -51,6 +50,8 @@ public class SleepSessionServiceImpl implements SleepSessionService {
         SleepPerson sleepPerson = personRepository.findById(Long.valueOf(personId)).orElseThrow(() -> new SleepPersonNotFoundException("Eine zutreffende Person konnte nicht gefunden werden"));
         session.setPerson(sleepPerson);
         sessionRepository.save(session);
+        sessionDto.setPersonId(sleepPerson.getId());
+        sessionDto.setId(id);
         return sessionDto;
     }
 

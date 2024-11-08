@@ -15,7 +15,6 @@ public class SleepSessionController {
 
     private SleepSessionService sessionService;
 
-    @Autowired
     public SleepSessionController(final SleepSessionService sessionService) {
         this.sessionService = sessionService;
     }

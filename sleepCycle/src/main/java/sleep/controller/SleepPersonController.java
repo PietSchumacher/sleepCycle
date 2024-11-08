@@ -20,7 +20,6 @@ public class SleepPersonController {
 
     private SleepPersonService personService;
 
-    @Autowired
     public SleepPersonController(final SleepPersonService personService) {
         this.personService = personService;
     }
