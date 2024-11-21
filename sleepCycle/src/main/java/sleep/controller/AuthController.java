@@ -19,6 +19,7 @@ import sleep.models.User;
 import sleep.repository.RoleRepository;
 import sleep.repository.UserRepository;
 import sleep.security.JwtGenerator;
+import sleep.service.AuthService;
 
 import java.util.Collections;
 
@@ -31,13 +32,15 @@ public class AuthController {
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
     private JwtGenerator jwtGenerator;
+    private AuthService authService;
 
-    public AuthController(final AuthenticationManager authenticationManager, final UserRepository userRepository, final RoleRepository roleRepository, final PasswordEncoder passwordEncoder, final JwtGenerator jwtGenerator) {
+    public AuthController(final AuthenticationManager authenticationManager, final UserRepository userRepository, final RoleRepository roleRepository, final PasswordEncoder passwordEncoder, final JwtGenerator jwtGenerator, final AuthService authService) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
+        this.authService = authService;
     }
 
     @PostMapping("register")
@@ -45,21 +48,21 @@ public class AuthController {
         if(userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username ist bereits vergeben!", HttpStatus.BAD_REQUEST);
         }
-        User user = new User();
-        user.setUsername(registerDto.getUsername());
-        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
-        Role roles = roleRepository.findByName("USER").get();
-        user.setRoles(Collections.singletonList(roles));
-        userRepository.save(user);
-
+        if(!registerDto.getControllPassword().equals(registerDto.getPassword())) {
+            return new ResponseEntity<>("Die Passwörter stimmen nicht überein!", HttpStatus.BAD_REQUEST);
+        }
+        authService.register(registerDto);
         return new ResponseEntity<>("User wurde erfolgreich erstellt", HttpStatus.CREATED);
     }
 
     @PostMapping("login")
     public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
+        System.out.println(loginDto);
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
+        System.out.println("Hier die Anfrage:");
+        System.out.println(new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK));
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
     }
 }

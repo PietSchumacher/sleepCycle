@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import sleep.dto.SleepSessionResponse;
 import sleep.dto.SleepPersonDto;
@@ -11,8 +12,10 @@ import sleep.dto.SleepSessionDto;
 import sleep.exceptions.SleepPersonNotFoundException;
 import sleep.models.SleepPerson;
 import sleep.models.SleepSession;
+import sleep.models.User;
 import sleep.repository.SleepPersonRepository;
 import sleep.repository.SleepSessionRepository;
+import sleep.repository.UserRepository;
 import sleep.service.SleepPersonService;
 
 import java.util.List;
@@ -26,16 +29,21 @@ public class SleepPersonServiceImpl implements SleepPersonService {
 
     private SleepSessionRepository sessionRepository;
     private SleepPersonRepository personRepository;
+    private UserRepository userRepository;
 
-    public SleepPersonServiceImpl(final SleepSessionRepository sessionRepository, final SleepPersonRepository personRepository) {
+    public SleepPersonServiceImpl(final SleepSessionRepository sessionRepository, final SleepPersonRepository personRepository, UserRepository userRepository) {
         this.sessionRepository = sessionRepository;
         this.personRepository = personRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public SleepPersonDto createSleepPerson(SleepPersonDto personDto){
         SleepPerson person = mapToObject(personDto);
+        User user = userRepository.findById(personDto.getUserId()).orElseThrow(() -> new UsernameNotFoundException("User konnte nicht gefunden werden!"));
+        person.setUser(user);
         SleepPerson newPerson = personRepository.save(person);
+        user.setPerson(newPerson);
         return personDto;
     }
 
@@ -94,6 +102,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         personDto.setName(person.getName());
         personDto.setSessions(person.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToDto(session)).collect(Collectors.toList()));
         personDto.setEmail(person.getEmail());
+        personDto.setUserId(person.getUser().getId());
         return personDto;
     }
 
@@ -104,7 +113,8 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());
-        person.setSessions(personDto.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToObject(session)).collect(Collectors.toList()));
+        if (personDto.getSessions() != null)
+            person.setSessions(personDto.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToObject(session)).collect(Collectors.toList()));
         return person;
     }
 

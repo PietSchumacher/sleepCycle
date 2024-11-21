@@ -24,4 +24,7 @@ public class SleepPerson {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "person_id")
     private List<SleepSession> sessions = new ArrayList<SleepSession>();
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
+    private User user;
 }
