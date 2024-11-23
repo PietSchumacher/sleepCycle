@@ -12,20 +12,65 @@
             margin-bottom: 20px;
         }
     </style>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('registerForm');
+            const formData = new FormData(form);
+            const jsonData = {
+                username: formData.get('username'),
+                password: formData.get('password'),
+                controllPassword: formData.get('controllPassword'),
+                sleepPersonDto: {
+                    name: formData.get('name'),
+                    email: formData.get('email') || null,
+                    birthDate: formData.get('birthDate') || null,
+                    weight: formData.get('weight') ? parseInt(formData.get('weight')) : null
+                }
+            };
+
+            try {
+                const response = await fetch('http://localhost:8081/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(jsonData),
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    if (errorMessage.includes("Username ist bereits vergeben!") || errorMessage.includes("Die Passwörter stimmen nicht überein!")) {
+                        alert(`Registrierung fehlgeschlagen: ${errorMessage}`);
+                    }
+                    return;
+                }
+                window.location.href = '/login';
+            } catch (error) {
+                console.error('Fehler beim Registrieren:', error);
+                alert(`Registrieren fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.`);
+            }
+        }
+    </script>
 </head>
 <body>
 <div class="fomularContainer">
     <div class="login-box">
         <h2>Füllen Sie bitte die folgenden Felder aus:</h2>
-        <form th:action="@{/register}" method="post">
-            <label for="username">Name</label>
+        <form id="registerForm" onsubmit="submitForm(event)">
+            <label for="username">Username</label>
             <input type="text" id="username" name="username" required>
 
-            <label for="password1">Passwort</label>
-            <input type="password" id="password1" name="password1" required>
+            <label for="password">Passwort</label>
+            <input type="password" id="password" name="password" required>
 
-            <label for="password2">Passwort wiederholen</label>
-            <input type="password" id="password2" name="password2" required>
+            <label for="controllPassword">Passwort wiederholen</label>
+            <input type="password" id="controllPassword" name="controllPassword" required>
+
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
 
             <label for="email">Email (optional)</label>
             <input type="email" id="email" name="email">

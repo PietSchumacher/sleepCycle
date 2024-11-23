@@ -1,5 +1,7 @@
 package sleep.controller;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,18 +53,35 @@ public class AuthController {
         if(!registerDto.getControllPassword().equals(registerDto.getPassword())) {
             return new ResponseEntity<>("Die Passwörter stimmen nicht überein!", HttpStatus.BAD_REQUEST);
         }
+        System.out.println(registerDto.getSleepPersonDto());
         authService.register(registerDto);
         return new ResponseEntity<>("User wurde erfolgreich erstellt", HttpStatus.CREATED);
     }
 
     @PostMapping("login")
-    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto) {
-        System.out.println(loginDto);
+    public ResponseEntity<AuthResponseDto> login(@RequestBody LoginDto loginDto, HttpServletResponse response) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        System.out.println("Hier die Anfrage:");
-        System.out.println(new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK));
+        Cookie cookie = new Cookie("auth_token", token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(3600);  // 1 hour
+        response.addCookie(cookie);
         return new ResponseEntity<>(new AuthResponseDto(token), HttpStatus.OK);
     }
+
+    @PostMapping("logout")
+    public ResponseEntity<String> logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie("auth_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().build();
+    }
+
 }

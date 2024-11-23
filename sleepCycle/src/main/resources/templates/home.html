@@ -4,9 +4,29 @@
     <meta charset="UTF-8">
     <title>SleepCycle Startseite</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <script>
+        async function logout(event) {
+            event.preventDefault();
+
+            try {
+                const response = await fetch('/api/auth/logout', {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    window.location.href = "/";
+                } else {
+                    alert("Fehler beim Logout. Bitte versuchen Sie es erneut.");
+                }
+            } catch (error) {
+                console.error("Fehler beim Logout:", error);
+                alert("Ein unerwarteter Fehler ist aufgetreten.");
+            }
+        }
+    </script>
 </head>
 <body>
-
 <div class="brand-image">
     <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
 </div>
@@ -16,8 +36,13 @@
         <li class="nav-item">
             <a class="nav-link" href="/">Startseite</a>
         </li>
-        <li class="nav-item">
+        <!-- Login-Logik -->
+        <li class="nav-item" th:if="${!login}">
             <a class="nav-link" href="/login">Login</a>
+        </li>
+        <!-- Logout-Logik -->
+        <li class="nav-item" th:if="${login}">
+            <a class="nav-link" href="#" onclick="logout(event)">Logout</a>
         </li>
         <li class="nav-item">
             <a class="nav-link" href="/gatherSleepSessions">Schlaf erfassen</a>

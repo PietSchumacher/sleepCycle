@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -19,7 +20,7 @@ public class SleepPerson {
     private int id;
     private String name;
     private String email;
-    private Integer age;
+    private Date birthDate;
     private Integer weight;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "person_id")

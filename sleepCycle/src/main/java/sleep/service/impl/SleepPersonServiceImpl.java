@@ -57,7 +57,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
     @Override
     public SleepPersonDto updateSleepPerson(SleepPersonDto personDto, Integer id){
         SleepPerson person = personRepository.findById((long) id).orElseThrow(() -> new SleepPersonNotFoundException("Person konnte nicht geupdated werden!"));
-        person.setAge(personDto.getAge());
+        person.setBirthDate(personDto.getBirthDate());
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());
@@ -97,7 +97,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
     static SleepPersonDto mapToDto(SleepPerson person){
         SleepPersonDto personDto = new SleepPersonDto();
         personDto.setId(person.getId());
-        personDto.setAge(person.getAge());
+        personDto.setBirthDate(person.getBirthDate());
         personDto.setWeight(person.getWeight());
         personDto.setName(person.getName());
         personDto.setSessions(person.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToDto(session)).collect(Collectors.toList()));
@@ -109,7 +109,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
     static SleepPerson mapToObject(SleepPersonDto personDto){
         SleepPerson person = new SleepPerson();
         person.setId(person.getId());
-        person.setAge(personDto.getAge());
+        person.setBirthDate(personDto.getBirthDate());
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());

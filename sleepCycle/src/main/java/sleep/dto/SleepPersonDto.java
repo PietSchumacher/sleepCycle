@@ -4,6 +4,7 @@ import lombok.Data;
 import sleep.models.SleepSession;
 import sleep.models.User;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -11,7 +12,7 @@ public class SleepPersonDto {
     private int id;
     private String name;
     private String email;
-    private Integer age;
+    private Date birthDate;
     private Integer weight;
     private List<SleepSessionDto> sessions;
     private int userId;

@@ -32,7 +32,7 @@ public class SecurityConfig {
     public SecurityConfig(final CustomUserDetailsService userDetailsService, JwtEntryPoint jwtEntryPoint, JwtGenerator jwtGenerator) {
         this.userDetailsService = userDetailsService;
         this.jwtEntryPoint = jwtEntryPoint;
-        this.jwtGenerator = new JwtGenerator();
+        this.jwtGenerator = jwtGenerator;
     }
 
     @Bean
@@ -44,10 +44,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll() // access to static resources
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/login", "/register", "/", "/gatherSleepSessions","/personalOverview").permitAll()
+                        .requestMatchers(HttpMethod.GET,"login", "/register", "/", "/gatherSleepSessions","/personalOverview").permitAll()
                         .anyRequest().authenticated()
-                )
-        ;
+                );
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
