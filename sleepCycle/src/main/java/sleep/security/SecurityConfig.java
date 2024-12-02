@@ -18,11 +18,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     private JwtEntryPoint jwtEntryPoint;
@@ -38,13 +40,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+             //   .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
                 .csrf(csrf -> csrf.disable())
                 .exceptionHandling(customEx -> customEx.authenticationEntryPoint(jwtEntryPoint))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/css/**", "/js/**", "/images/**").permitAll() // access to static resources
-                        .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"login", "/register", "/", "/gatherSleepSessions","/personalOverview").permitAll()
+                        .requestMatchers("/api/auth/**","/api/session/create").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/gatherSleepSessions", "/personalOverview","/login", "/register", "/", "/profile", "/optimization", "/api/session/getByDate").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/session/*/update", "/api/person/*/update").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/session/*/delete").permitAll()
                         .anyRequest().authenticated()
                 );
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

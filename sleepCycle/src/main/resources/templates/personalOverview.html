@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overview</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .container {
+            display: flex;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const createCharts = (sessions) => {
+
+            const groupedData = sessions.reduce((acc, session) => {
+                const date = new Date(session.date).toLocaleDateString("de-DE");
+                if (!acc[date]) {
+                    acc[date] = { totalDuration: 0, totalEvaluation: 0, count: 0 };
+                }
+                acc[date].totalDuration += session.duration / (1000 * 60 * 60);
+                acc[date].totalEvaluation += session.personalEvaluation;
+                acc[date].count += 1;
+                return acc;
+            }, {});
+
+            const labels = Object.keys(groupedData);
+            const durations = labels.map(date => groupedData[date].totalDuration);
+            const evaluations = labels.map(date => groupedData[date].totalEvaluation / groupedData[date].count);
+
+            // Evaluation Chart
+            const evaluationCtx = document.getElementById('evaluationChart').getContext('2d');
+            new Chart(evaluationCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Durchschnittliche Bewertung',
+                        data: evaluations,
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Datum' } },
+                        y: { title: { display: true, text: 'Bewertung' }, beginAtZero: true, max: 10 }
+                    }
+                }
+            });
+
+            // Duration Chart
+            const durationCtx = document.getElementById('durationChart').getContext('2d');
+            new Chart(durationCtx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Schlafdauer (Stunden)',
+                        data: durations,
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Datum' } },
+                        y: { title: { display: true, text: 'Schlafdauer (Stunden)' }, beginAtZero: true }
+                    }
+                }
+            });
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            const hiddenEdit = document.getElementById("hiddenEdit");
+            const closeEdit = document.getElementById("closeEdit");
+            const editForm = document.getElementById("editForm");
+            const deleteButton = document.getElementById("deleteSession");
+
+            document.getElementById("sessionsTableBody").addEventListener("click", (event) => {
+                const row = event.target.closest("tr");
+                if (!row) return;
+
+                const cells = row.children;
+                document.getElementById("sessionId").value = row.dataset.id;
+                document.getElementById("editDate").value = cells[0].textContent;
+                document.getElementById("editStartTime").value = cells[1].textContent;
+                document.getElementById("editEndTime").value = cells[2].textContent;
+                document.getElementById("editCycles").value = cells[4].textContent;
+                document.getElementById("editEvaluation").value = cells[5].textContent;
+
+                hiddenEdit.style.display = "block";
+            });
+
+            closeEdit.addEventListener("click", () => {
+                hiddenEdit.style.display = "none";
+            });
+
+            editForm.addEventListener("submit", async (event) => {
+                event.preventDefault();
+                const sessionId = document.getElementById("sessionId").value;
+
+                const updatedSession = {
+                    date: document.getElementById("editDate").value,
+                    startTime: document.getElementById("editStartTime").value,
+                    endTime: document.getElementById("editEndTime").value,
+                    cycles : document.getElementById("editCycles").value,
+                    personalEvaluation: document.getElementById("editEvaluation").value
+                };
+
+                try {
+                    const csrfToken = document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1];
+
+                    const response = await fetch(`http://localhost:8081/api/session/${sessionId}/update`, {
+                        method: "PUT",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-XSRF-Token": csrfToken
+                        },
+                        credentials: "include",
+                        body: JSON.stringify(updatedSession)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Fehler: ${response.status}`);
+                    }
+
+                    alert("Session erfolgreich bearbeitet.");
+                    hiddenEdit.style.display = "none";
+                } catch (error) {
+                    alert(`Fehler: ${error.message}`);
+                }
+            });
+
+            deleteButton.addEventListener("click", async () => {
+                const sessionId = document.getElementById("sessionId").value;
+
+                try {
+                    const csrfToken = document.cookie
+                        .split('; ')
+                        .find(row => row.startsWith('XSRF-TOKEN='))
+                        ?.split('=')[1];
+
+                    const response = await fetch(`http://localhost:8081/api/session/${sessionId}/delete`, {
+                        method: "POST",
+                        headers: {
+                            "X-XSRF-Token": csrfToken
+                        },
+                        credentials: "include"
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Fehler: ${response.status}`);
+                    }
+
+                    alert("Session erfolgreich gelöscht.");
+                    hiddenEdit.style.display = "none";
+                } catch (error) {
+                    alert(`Fehler: ${error.message}`);
+                }
+            });
+        });
+
+
+        // Erstmal austesten
+
+
+        const formatDateTime = (timeString, includeTime = true) => {
+            const options = {
+                dateStyle: "short",
+                timeZone: "Europe/Berlin",
+            };
+
+            if (includeTime) {
+                options.timeStyle = "short";
+            }
+
+            return new Intl.DateTimeFormat("de-DE", options).format(new Date(timeString));
+        };
+
+        async function submitForm(event) {
+            event.preventDefault();
+            const form = document.getElementById('searchForm');
+            const formData = new FormData(form);
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            const searchResults = document.getElementById("searchResults");
+            const sessionsTableBody = document.getElementById("sessionsTableBody");
+
+            searchResults.style.display = "none";
+            sessionsTableBody.innerHTML = "";
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+
+            try {
+                const dateParam = new URLSearchParams(jsonData).toString();
+                const response = await fetch(`http://localhost:8081/api/session/getByDate?${dateParam}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-XSRF-Token': csrfToken
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Fehlercode: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.content && data.content.length > 0) {
+                    data.content.forEach(session => {
+                        const row = document.createElement("tr");
+                        row.dataset.id = session.id;
+                        row.innerHTML = `
+                    <td>${formatDateTime(session.date, false)}</td>
+                    <td>${formatDateTime(session.startTime)}</td>
+                    <td>${formatDateTime(session.endTime)}</td>
+                    <td>${session.duration / (1000 * 60)}</td>
+                    <td>${session.cycles || '/'}</td>
+                    <td>${session.personalEvaluation}</td>
+                `;
+                        sessionsTableBody.appendChild(row);
+                    });
+                    searchResults.style.display = "block";
+
+                    // Charts aktualisieren
+                    createCharts(data.content);
+                } else {
+                    alert("Keine Sessions gefunden.");
+                }
+            } catch (error) {
+                alert(`Fehler: ${error.message}`)
+            }
+        }
+    </script>
+</head>
+<body>
+<div class="brand-image">
+    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
+</div>
+<div th:insert="fragments/navbar :: navbar"></div>
+
+<div class="container" style="background-color: white; color:#555555">
+        <div class="split-container">
+            <h3 th:text="${totalSessions} + ' erfasste Schlaf-Sessions'"></h3>
+     </div>
+     <div class="split-container">
+         <h3 th:text="${totalSleepHours} + ' erfasste Stunden im Schlaf'"></h3>
+      </div>
+</div>
+
+  <!-- Frame for Averages -->
+    <div class="container">
+        <div class="triple-split-container">
+            <h3>Mittelwerte (letzte 7 Tage)</h3>
+            <p>Schlafdauer: <span th:text="${avg7DaysDuration}">0</span> Stunden</p>
+            <p>Bewertung: <span th:text="${avg7DaysEvaluation}">N/A</span></p>
+        </div>
+        <div class="triple-split-container">
+            <h3>Mittelwerte (letzter Monat)</h3>
+            <p>Schlafdauer: <span th:text="${avgMonthDuration}">0</span> Stunden</p>
+            <p>Bewertung: <span th:text="${avgMonthEvaluation}">N/A</span></p>
+        </div>
+        <div class="triple-split-container">
+            <h3>Mittelwerte (letztes Jahr)</h3>
+            <p>Schlafdauer: <span th:text="${avgYearDuration}">0</span> Stunden</p>
+            <p>Bewertung: <span th:text="${avgYearEvaluation}">N/A</span></p>
+        </div>
+    </div>
+
+
+<!-- Search Section -->
+<h3 style="text-align: center; margin-top: 50px; margin-bottom: 10px;">Session-Suche</h3>
+    <div class="container" style="padding: 25px 15px 0 15px; margin-top: 0;">
+        <div class="col">
+            <form id="searchForm" onsubmit="submitForm(event)">
+                <label for="startDate">Von</label>
+                <input type="date" id="startDate" name="startDate" required>
+                <label for="endDate">Bis</label>
+                <input type="date" id="endDate" name="endDate" required>
+                <input type="submit" value="Suche">
+            </form>
+        </div>
+    </div>
+
+<!-- Search Results -->
+<div style="display: none;" id="searchResults">
+    <div class="container" style="flex:0.5;"><h3>Sessions</h3></div>
+    <div class="container" style="flex:0;">
+            <table>
+                <thead>
+                <tr>
+                    <th>Datum</th>
+                    <th>Startzeit</th>
+                    <th>Endzeit</th>
+                    <th>Schlafdauer (in min)</th>
+                    <th>Schlafzyklen</th>
+                    <th>Evaluation</th>
+                </tr>
+                </thead>
+                <tbody id="sessionsTableBody">
+                </tbody>
+            </table>
+    </div>
+</div>
+
+<!-- Graphics -->
+<div class="container" style="flex:0.5;"><h3>Verlauf der Bewertungen</h3></div>
+<div class="container" style="width:70%;">
+    <canvas id="evaluationChart"></canvas>
+</div>
+<div class="container" style="flex:0.5;"><h3>Verlauf der Schlafdauer</h3></div>
+<div class="container" style="width:70%;">
+    <canvas id="durationChart"></canvas>
+</div>
+
+<div id="hiddenEdit" class="hidden-edit" style="display: none;">
+    <div class="edit-content">
+        <span class="close" id="closeEdit">&times;</span>
+        <h3>Session bearbeiten</h3>
+        <form id="editForm">
+            <input type="hidden" id="sessionId">
+            <label for="editDate">Datum:</label>
+            <input type="date" id="editDate" name="date" required>
+            <label for="editStartTime">Startzeit:</label>
+            <input type="datetime-local" id="editStartTime" name="startTime" required>
+            <label for="editEndTime">Endzeit:</label>
+            <input type="datetime-local" id="editEndTime" name="endTime" required>
+            <label for="editCycles">Schlafzyklen:</label>
+            <input type="number" id="editCycles" name="cycles">
+            <label for="editEvaluation">Bewertung:</label>
+            <input type="number" id="editEvaluation" name="personalEvaluation" min="1" max="10" required>
+            <button type="submit">Session speichern</button>
+            <button type="button" id="deleteSession">Session Löschen</button>
+        </form>
+    </div>
+</div>
+</body>
+</html>

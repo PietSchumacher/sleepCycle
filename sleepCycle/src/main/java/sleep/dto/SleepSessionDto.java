@@ -11,7 +11,10 @@ public class SleepSessionDto {
     private Date startTime;
     private Date endTime;
     private Integer duration;
+    private Date date;
     private Integer cycles;
-    private String personalEvaluation;
+    private Integer personalEvaluation;
     private int personId;
+
+
 }

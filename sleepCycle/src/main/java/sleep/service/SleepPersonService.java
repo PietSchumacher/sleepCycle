@@ -4,6 +4,7 @@ import sleep.dto.SleepPersonDto;
 import sleep.dto.SleepSessionDto;
 import sleep.dto.SleepSessionResponse;
 
+import java.util.Date;
 import java.util.List;
 
 public interface SleepPersonService {
@@ -16,4 +17,7 @@ public interface SleepPersonService {
     void deleteSleepPerson(Integer personId);
 
     SleepSessionResponse getAllSessionsByPersonId(int id, int pageNo, int pageSize);
+
+    SleepSessionResponse getAllSessionsByDateAndPersonId(Date startDate, Date endDate, int personId, int pageNo, int pageSize);
+
 }

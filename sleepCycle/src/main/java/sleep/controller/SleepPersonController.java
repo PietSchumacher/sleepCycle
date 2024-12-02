@@ -1,27 +1,32 @@
 package sleep.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sleep.dto.SleepPersonDto;
-import sleep.dto.SleepSessionDto;
 import sleep.dto.SleepSessionResponse;
+import sleep.models.User;
 import sleep.models.SleepPerson;
-import sleep.models.SleepSession;
+import sleep.repository.UserRepository;
+import sleep.security.JwtGenerator;
 import sleep.service.SleepPersonService;
-import sleep.service.impl.SleepPersonServiceImpl;
 
-import java.util.List;
+import static sleep.controller.HomeController.getJwtFromCookies;
 
 @RestController
 @RequestMapping("/api/person/")
 public class SleepPersonController {
 
     private SleepPersonService personService;
+    private JwtGenerator jwtGenerator;
+    private UserRepository userRepository;
 
-    public SleepPersonController(final SleepPersonService personService) {
+    public SleepPersonController(final SleepPersonService personService, final JwtGenerator jwtGenerator, final UserRepository userRepository) {
         this.personService = personService;
+        this.jwtGenerator = jwtGenerator;
+        this.userRepository = userRepository;
     }
 
     @GetMapping("{id}")
@@ -35,8 +40,22 @@ public class SleepPersonController {
     }
 
     @PutMapping("{id}/update")
-    public ResponseEntity<SleepPersonDto> updateSleepPerson(@RequestBody SleepPersonDto person, @PathVariable("id") int personId){
-        return ResponseEntity.ok(personService.updateSleepPerson(person, personId));
+    public ResponseEntity<SleepPersonDto> updateSleepPerson(@RequestBody SleepPersonDto person, @PathVariable("id") int personId, HttpServletRequest request){
+        String token = getJwtFromCookies(request);
+        if (token != null) {
+            String username = jwtGenerator.getUsernameFromJWT(token);
+            try {
+                SleepPerson sleepPerson = userRepository.findByUsername(username)
+                        .filter(user -> user.getPerson() != null && user.getPerson().getId() == personId)
+                        .map(User::getPerson)
+                        .orElseThrow(() -> new EntityNotFoundException("Benutzer oder zugehörige Person nicht gefunden"));
+            }
+            catch (EntityNotFoundException e) {
+                return new ResponseEntity<>(new SleepPersonDto(), HttpStatus.NOT_FOUND);
+            }
+            return ResponseEntity.ok(personService.updateSleepPerson(person, personId));
+        }
+        return new ResponseEntity<>(new SleepPersonDto(), HttpStatus.BAD_REQUEST);
     }
 
     @PostMapping("{id}/delete")
@@ -51,6 +70,9 @@ public class SleepPersonController {
                                                @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
         return new ResponseEntity<>(personService.getAllSessionsByPersonId(id, pageNo, pageSize),HttpStatus.OK);
     }
+
+
+
 
 
 

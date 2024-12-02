@@ -13,6 +13,14 @@
         }
     </style>
     <script>
+        // Ensures a CSRF token is generated; otherwise, the first login attempt after a restart will fail.
+        document.addEventListener("DOMContentLoaded", async () => {
+            await fetch('http://localhost:8081/api/auth/login', {
+                method: 'POST',
+                credentials: 'include'
+            });
+        });
+
         async function submitForm(event) {
             event.preventDefault();
 
@@ -23,30 +31,36 @@
                 jsonData[key] = value;
             });
 
-            try {
-                const response = await fetch('http://localhost:8081/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(jsonData),
-                    credentials: 'include'
-                });
+        const csrfToken = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('XSRF-TOKEN='))
+            ?.split('=')[1];
 
-                if (!response.ok) {
-                    throw new Error(`HTTP-Fehler! Status: ${response.status}`);
-                }
+        try {
+            const response = await fetch('http://localhost:8081/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-Token': csrfToken
+                },
+                body: JSON.stringify(jsonData),
+                credentials: 'include'
+            });
 
-                window.location.href = '/';
-            } catch (error) {
-                console.error('Fehler beim Login:', error);
-                alert(`Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.`);
+            if (!response.ok) {
+                throw new Error(`HTTP-Fehler! Status: ${response.status}`);
             }
-        }
 
-    </script>
+            window.location.href = '/';
+        } catch (error) {
+            console.error('Fehler beim Login:', error);
+            alert(`Login fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.`);
+        }
+    }
+</script>
 </head>
 <body>
+<div th:insert="fragments/navbar :: navbar"></div>
 <div class="fomularContainer">
     <div class="login-box">
         <h1>Login</h1>

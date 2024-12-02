@@ -25,9 +25,9 @@ public class SleepSessionServiceImpl implements SleepSessionService {
     }
 
     @Override
-    public SleepSessionDto createSleepSession(SleepSessionDto sessionDto, Integer personId){
+    public SleepSessionDto createSleepSession(SleepSessionDto sessionDto){
         SleepSession session = mapToObject(sessionDto);
-        SleepPerson person = personRepository.findById(Long.valueOf(personId)).orElseThrow(() -> new SleepPersonNotFoundException("Person konnte nicht gefunden werden!"));
+        SleepPerson person = personRepository.findById(Long.valueOf(sessionDto.getPersonId())).orElseThrow(() -> new SleepPersonNotFoundException("Person konnte nicht gefunden werden!"));
         session.setPerson(person);
         SleepSession newSession = sessionRepository.save(session);
         return mapToDto(newSession);
@@ -40,14 +40,15 @@ public class SleepSessionServiceImpl implements SleepSessionService {
     }
 
     @Override
-    public SleepSessionDto updateSleepSession(SleepSessionDto sessionDto, Integer id, Integer personId){
+    public SleepSessionDto updateSleepSession(SleepSessionDto sessionDto, Integer id){
         SleepSession session = sessionRepository.findById((long) id).orElseThrow(() -> new SleepSessionNotFoundException("Session konnte nicht geupdated werden!"));
         session.setStartTime(sessionDto.getStartTime());
         session.setEndTime(sessionDto.getEndTime());
         session.setDuration(sessionDto.getDuration());
+        session.setDate(sessionDto.getDate());
         session.setCycles(sessionDto.getCycles());
         session.setPersonalEvaluation(sessionDto.getPersonalEvaluation());
-        SleepPerson sleepPerson = personRepository.findById(Long.valueOf(personId)).orElseThrow(() -> new SleepPersonNotFoundException("Eine zutreffende Person konnte nicht gefunden werden"));
+        SleepPerson sleepPerson = personRepository.findById(Long.valueOf(sessionDto.getPersonId())).orElseThrow(() -> new SleepPersonNotFoundException("Eine zutreffende Person konnte nicht gefunden werden"));
         session.setPerson(sleepPerson);
         sessionRepository.save(session);
         sessionDto.setPersonId(sleepPerson.getId());
@@ -67,6 +68,7 @@ public class SleepSessionServiceImpl implements SleepSessionService {
         sessionDto.setStartTime(session.getStartTime());
         sessionDto.setEndTime(session.getEndTime());
         sessionDto.setDuration(session.getDuration());
+        sessionDto.setDate(session.getDate());
         sessionDto.setCycles(session.getCycles());
         sessionDto.setPersonalEvaluation(session.getPersonalEvaluation());
         sessionDto.setPersonId(session.getPerson().getId());
@@ -79,6 +81,7 @@ public class SleepSessionServiceImpl implements SleepSessionService {
         session.setStartTime(sessionDto.getStartTime());
         session.setEndTime(sessionDto.getEndTime());
         session.setDuration(sessionDto.getDuration());
+        session.setDate(sessionDto.getDate());
         session.setCycles(sessionDto.getCycles());
         session.setPersonalEvaluation(sessionDto.getPersonalEvaluation());
         return session;

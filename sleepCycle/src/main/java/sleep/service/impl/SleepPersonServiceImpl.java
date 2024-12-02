@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import sleep.dto.SleepSessionResponse;
@@ -18,6 +19,7 @@ import sleep.repository.SleepSessionRepository;
 import sleep.repository.UserRepository;
 import sleep.service.SleepPersonService;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,9 +63,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());
-        updateSessions(person, personDto.getSessions());
         personRepository.save(person);
-        System.out.println(person.getSessions().size());
         return personDto;
     }
 
@@ -94,13 +94,32 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         return sessionResponse;
     }
 
+    @Override
+    public SleepSessionResponse getAllSessionsByDateAndPersonId(Date startDate, Date endDate, int personId, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("startTime").ascending());
+        SleepPerson person = personRepository.getReferenceById((long) personId);
+        Page<SleepSession> sessions = sessionRepository.findByDateBetweenAndPerson(startDate, endDate, person, pageable);
+        List<SleepSession> listOfSessions = sessions.getContent();
+        List<SleepSessionDto> content = listOfSessions.stream()
+                .map(session -> (SleepSessionServiceImpl.mapToDto(session)))
+                .collect(Collectors.toList());
+        SleepSessionResponse sessionResponse = new SleepSessionResponse();
+        sessionResponse.setContent(content);
+        sessionResponse.setPageNo(sessions.getNumber());
+        sessionResponse.setPageSize(sessions.getSize());
+        sessionResponse.setTotalElements(sessions.getTotalElements());
+        sessionResponse.setTotalPages(sessions.getTotalPages());
+        sessionResponse.setLast(sessions.isLast());
+
+        return sessionResponse;
+    }
+
     static SleepPersonDto mapToDto(SleepPerson person){
         SleepPersonDto personDto = new SleepPersonDto();
         personDto.setId(person.getId());
         personDto.setBirthDate(person.getBirthDate());
         personDto.setWeight(person.getWeight());
         personDto.setName(person.getName());
-        personDto.setSessions(person.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToDto(session)).collect(Collectors.toList()));
         personDto.setEmail(person.getEmail());
         personDto.setUserId(person.getUser().getId());
         return personDto;
@@ -113,35 +132,7 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         person.setEmail(personDto.getEmail());
         person.setName(personDto.getName());
         person.setWeight(personDto.getWeight());
-        if (personDto.getSessions() != null)
-            person.setSessions(personDto.getSessions().stream().map(session -> SleepSessionServiceImpl.mapToObject(session)).collect(Collectors.toList()));
         return person;
     }
 
-    private void updateSessions(SleepPerson person, List<SleepSessionDto> sessionDtos) {
-        List<SleepSession> currentSessions = person.getSessions();
-
-        Set<Integer> sessionDtoIds = sessionDtos.stream()
-                .map(SleepSessionDto::getId)
-                .collect(Collectors.toSet());
-
-        currentSessions.removeIf(session -> !sessionDtoIds.contains(session.getId()));
-
-        for (SleepSessionDto sessionDto : sessionDtos) {
-            SleepSession currentSession = currentSessions.stream()
-                    .filter(s -> s.getId() == sessionDto.getId())
-                    .findFirst()
-                    .orElseGet(() -> {
-                        SleepSession newSession = new SleepSession();
-                        newSession.setPerson(person);
-                        currentSessions.add(newSession);
-                        return newSession;
-                    });
-            currentSession.setStartTime(sessionDto.getStartTime());
-            currentSession.setEndTime(sessionDto.getEndTime());
-            currentSession.setDuration(sessionDto.getDuration());
-            currentSession.setCycles(sessionDto.getCycles());
-            currentSession.setPersonalEvaluation(sessionDto.getPersonalEvaluation());
-        }
-    }
 }

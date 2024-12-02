@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>SleepCycle Startseite</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <style>
+        .container {
+            text-align: center;
+        }
+        .fomularContainer{
+            height: 70vh;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function submitForm(event) {
+            event.preventDefault();
+
+            const form = document.getElementById('profileForm');
+            const formData = new FormData(form);
+
+            const jsonData = {};
+            formData.forEach((value, key) => {
+                jsonData[key] = value;
+            });
+
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+
+            const personId = document.getElementById("personId").value;
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/person/${personId}/update`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-XSRF-Token': csrfToken
+                    },
+                    body: JSON.stringify(jsonData),
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+                }
+                else {
+                    Swal.fire({
+                        title: 'Erfolgreich!',
+                        text: 'Dein Profil wurde erfolgreich geändert!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Fehler beim Ändern des Profils:', error);
+                alert(`Profil-Speicherung fehlgeschlagen. Bitte überprüfe deine Angaben.`);
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div class="brand-image">
+    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
+</div>
+<div th:insert="fragments/navbar :: navbar"></div>
+
+<div class="container">
+    <h1>Willkommen, <span th:text="${username}">Benutzer</span>!</h1>
+    <h3>Hier kannst du deine Daten ändern:</h3>
+    <div class="fomularContainer">
+        <div class="login-box">
+            <form id="profileForm" onsubmit="submitForm(event)">
+                <input type="hidden" id="personId" th:value="${person.id}">
+
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" th:value="${person.name}" required>
+
+                <label for="email">Email (optional)</label>
+                <input type="email" id="email" name="email" th:value="${person.email}">
+
+                <label for="birthDate">Geburtsdatum (optional)</label>
+                <input type="date" id="birthDate" name="birthDate" th:value="${#dates.format(person.birthDate, 'yyyy-MM-dd')}">
+
+                <label for="weight">Gewicht in kg (optional)</label>
+                <input type="number" id="weight" name="weight" th:value="${person.weight}">
+
+                <input type="submit" value="Neue Daten speichern">
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <span>© 2024 SleepCycle. Alle Rechte vorbehalten.</span>
+    </div>
+</footer>
+
+</body>
+</html>
