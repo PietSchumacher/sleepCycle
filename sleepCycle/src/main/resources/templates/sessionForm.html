@@ -2,14 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SleepCycle Startseite</title>
+    <title>Session erfassen</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         .container {
             text-align: center;
-        }
-        .fomularContainer{
-            height: 70vh;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -81,9 +78,7 @@
 </head>
 <body>
 
-<div class="brand-image">
-    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
-</div>
+<div th:insert="fragments/brandImage :: brandImage"></div>
 <div th:insert="fragments/navbar :: navbar"></div>
 
 <div class="container">
@@ -114,11 +109,7 @@
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span>© 2024 SleepCycle. Alle Rechte vorbehalten.</span>
-    </div>
-</footer>
+<div th:insert="fragments/footer :: footer"></div>
 
 </body>
 </html>

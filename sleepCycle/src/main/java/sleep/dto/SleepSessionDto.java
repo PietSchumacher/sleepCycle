@@ -15,6 +15,4 @@ public class SleepSessionDto {
     private Integer cycles;
     private Integer personalEvaluation;
     private int personId;
-
-
 }

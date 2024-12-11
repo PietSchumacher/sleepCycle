@@ -49,13 +49,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**","/api/session/create").permitAll()
                         .requestMatchers(HttpMethod.GET,"/gatherSleepSessions", "/personalOverview","/login", "/register", "/", "/profile", "/optimization", "/api/session/getByDate").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/session/*/update", "/api/person/*/update").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/session/*/delete").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/session/*/delete", "api/person/*/delete").permitAll()
                         .anyRequest().authenticated()
                 );
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {

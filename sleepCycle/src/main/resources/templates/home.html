@@ -2,36 +2,74 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SleepCycle Startseite</title>
+    <title>WakeUpRenewed</title>
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-<div class="brand-image">
-    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
-</div>
+<div th:insert="fragments/brandImage :: brandImage"></div>
 
 <div th:insert="fragments/navbar :: navbar"></div>
 
 
 <div class="container">
-    <h1>Willkommen auf unserer Webseite</h1>
-    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+        <h1>Willkommen auf unserer Webseite</h1>
+        <p>
+            Wir bieten euch eine Methode zur Schlafoptimierung, basierend auf euren eigenen Einschätzungen.
+            Alles, was ihr dafür tun müsst, ist, eure Schlafsessions zu tracken. Wichtig ist, dass ihr dabei immer eure längste Schlafphase (meistens über Nacht) über mehrere Tage hinweg angebt.
+            Basierend auf euren Schlafdaten kalkulieren wir optimale Schlafzeiten, die euch zu einem besseren Schlaf verhelfen können.
+        </p>
 
-    <h2>Warum ist Schlaf so wichtig?</h2>
-    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+    <div class="frame">
+        <h2>Warum ist Schlaf so wichtig?</h2>
+        <p>
+            Schlaf ist, neben Bewegung und Ernährung, eine der drei Hauptsäulen eines gesunden Lebens und Körpers.
+            Er hat zudem einen enormen Einfluss auf die geistige und emotionale Gesundheit. Konkrete Vorteile von gutem bis optimalem Schlaf sind:
+        </p>
+        <ul>
+            <li>Stärkung des Immunsystems</li>
+            <li>Förderung der Herzgesundheit</li>
+            <li>Gewichtsregulation</li>
+            <li>Gewebereparatur und Regeneration</li>
+            <li>Verbesserung von Stoffwechsel und Blutzuckerregulation</li>
+            <li>Steigerung von Konzentration und Produktivität</li>
+            <li>Stärkung des Gedächtnisses</li>
+            <li>Emotionale Stabilität</li>
+            <li>Verbesserung der Lernfähigkeit</li>
+            <li>Gesündere Haut</li>
+            <li>Hormonelle Balance</li>
+            <li>Erhöhung der Lebenserwartung</li>
+        </ul>
+        <p>
+            Diese Vorteile zeigen deutlich, wie stark Schlaf unser Leben beeinflusst und warum die Optimierung der Schlafqualität ein wichtiger Bestandteil eines gesunden Lebens sein sollte.
+        </p>
+    </div>
 
-    <h2>Wie kann Schlaftracking helfen</h2>
-    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+    <div class="frame">
+        <h2>Wie kann Schlaftracking helfen?</h2>
+        <p>
+            Schlaftracking basiert auf Erkenntnissen aus Studien und Experimenten, die allgemeine Aspekte des Schlafes untersuchen.
+            Dabei muss jedoch beachtet werden, dass jeder Mensch einen individuellen Schlafrhythmus hat, und es keinen universellen Ansatz gibt, der für alle funktioniert.
+        </p>
+        <p>
+            Dennoch gibt es Prinzipien und Verhaltensweisen, die vielen Menschen geholfen haben, ihren Schlaf zu verbessern. Dazu gehört beispielsweise das Einhalten einer Schlafdauer von 7 bis 9 Stunden oder das Tracken von Schlafphasen, um nicht nur die Dauer, sondern auch die Qualität des Schlafes zu bewerten.
+        </p>
+    </div>
 
-    <h2>Wie kann die Seite genutzt werden?</h2>
-    <p>Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</p>
+    <div class="frame">
+        <h2>Wie kann diese Seite genutzt werden?</h2>
+        <p>
+            Unser Ansatz basiert auf der individuellen Einschätzung deiner Schlafsessions. Sobald genügend Daten vorhanden sind, werten wir die 10 besten Sessions der letzten zwei Monate aus. Basierend darauf berechnen wir deine optimale Schlafdauer, indem wir die ideale Länge eines Schlafzyklus bestimmen und diese hochrechnen.
+        </p>
+        <p>
+            Wir wissen, dass Schlafzyklen von Person zu Person unterschiedlich sind. Dennoch können diese Berechnungen hilfreiche Richtwerte liefern, um passende Schlafzeiten zu finden.
+        </p>
+        <p>
+            Da uns jedoch keine Daten über exakte Schlafphasen und -zeiten vorliegen (wie sie beispielsweise durch eine Smartwatch erfasst werden könnten), können wir aktuell nur begrenzt Aussagen über die Schlafqualität treffen. Wir arbeiten jedoch ständig daran, unser System zu verbessern und neue Funktionen hinzuzufügen.
+        </p>
+    </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span>© 2024 SleepCycle. Alle Rechte vorbehalten.</span>
-    </div>
-</footer>
+<div th:insert="fragments/footer :: footer"></div>
 
 </body>
 </html>

@@ -2,202 +2,224 @@
 Basic style configurations for the SleepCycle web application
 */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #121212;
-    color: #a1a1a1;
-    line-height: 1.6;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
+font-family: Arial, sans-serif;
+margin: 0;
+padding: 0;
+background-color: #121212;
+color: #a1a1a1;
+line-height: 1.6;
+display: flex;
+flex-direction: column;
 }
 
 .container {
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 15px 0 15px;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
+width: 96%;
+margin: 0 auto;
+padding: 0 2% 0 2%;
+justify-content: center;
+align-items: center;
+flex: 1;
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
+width: 100%;
+min-width: 950px;
+border-collapse: collapse;
+margin-top: 3%;
 }
 
 table th, table td {
-    text-align: center;
-    padding: 10px;
-    border: 1px solid #dddddd;
+text-align: center;
+padding: 3%;
+border: 1px solid #dddddd;
 }
 
 table th {
-    background-color: #f3f3f3;
-    font-weight: bold;
-    color: #555555;
+background-color: #f3f3f3;
+font-weight: bold;
+color: #555555;
 }
 
 table tr:nth-child(even) {
-    background-color: #f9f9f9;
+background-color: #f9f9f9;
 }
 
 table tr:hover {
-    background-color: #0001fe;
-    color: #fff;
+background-color: #0001fe;
+color: #fff;
 }
 
 .table-header {
-    margin-bottom: 10px;
-    font-size: 20px;
-    color: #333;
-    font-weight: bold;
-    text-align: left;
+margin-bottom: 3%;
+font-size: 20px;
+color: #333;
+font-weight: bold;
+text-align: left;
 }
 
 .split-container {
-    margin: 0 auto;
-    padding: 0 15px 0 15px;
+margin: 0 auto;
+padding: 0 5% 0 5%;
 }
 
 .triple-split-container{
-    margin: 0 auto;
-    width: 30%;
+margin: 0 auto;
+width: 30%;
 }
 
 .fomularContainer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+display: flex;
+justify-content: center;
+height: 40%;
 }
 
 .col{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 40%;
+display: flex;
+justify-content: center;
+align-items: center;
+width: 40%;
 }
 
 .navbar {
-    background-color: #ffffff;
-    padding: 1rem;
-    display: flex;
-    justify-content: left;
-    width: 100%;
+background-color: #ffffff;
+padding: 1rem;
+display: flex;
+justify-content: left;
+width: 100%;
+box-sizing: border-box;
+overflow-x: auto;
+white-space: nowrap;
 }
 
 .navbar-nav {
-    list-style: none;
-    display: flex;
-    padding: 0;
+list-style: none;
+display: flex;
+padding: 0;
 }
 
 .nav-item {
-    margin: 0 10px;
+margin: 0 4%;
 }
 
 .nav-link {
-    text-decoration: none;
-    color: #007bff;
-    font-size: 1rem;
+text-decoration: none;
+color: #007bff;
+font-size: 1rem;
 }
 
 .nav-link:hover {
-    text-decoration: underline;
+text-decoration: underline;
 }
 
 h1, h2 {
-    color: #a1a1a1;
+color: #a1a1a1;
 }
 
 p {
-    color: #a1a1a1;
-    margin-bottom: 1.5rem;
+color: #a1a1a1;
+margin-bottom: 1.5rem;
 }
 
 .footer {
-    background-color: #ffffff;
-    padding: 1rem;
-    text-align: center;
-    color: black;
-    position: relative;
-    bottom: 0;
-    width: 100%;
+background-color: #ffffff;
+margin-top: 5%;
+padding: 1rem;
+text-align: center;
+color: black;
+position: relative;
+bottom: 0;
 }
 
 .brand-image {
-    display: flex;
-    justify-content: left;
+text-align: center;
+}
+
+.brand-image img {
+display: block;
+margin: 0 auto;
+}
+
+.brand-image h2 {
+margin-top: 0%;
+color: white;
 }
 
 .login-box {
-    text-align: left;
-    background-color: #1e1e1e;
-    padding: 60px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+margin-top: 5%;
+text-align: left;
+background-color: #1e1e1e;
+padding: 5%;
+border-radius: 3%;
 }
+
 label {
-    color: white;
-    display: block;
-    margin: 10px 0 5px;
+color: white;
+display: block;
+margin: 1% 0 2%;
 }
-input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="number"]  {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: none;
-    border-radius: 5px;
-    background-color: #333;
-    color: #fff;
+
+input[type="text"], input[type="password"], input[type="email"], input[type="date"], input[type="number"], input[type="datetime-local"]  {
+width: 90%;
+padding: 5%;
+margin-bottom: 10%;
+border: none;
+border-radius: 3%;
+background-color: #333;
+color: #fff;
 }
+
 input[type="submit"] {
-    width: 100%;
-    padding: 10px;
-    margin: 5px;
-    background-color: #0001fe;
-    border: none;
-    border-radius: 5px;
-    color: #fff;
-    cursor: pointer;
-    font-size: 16px;
+width: 100%;
+padding: 5%;
+margin: 2%;
+background-color: #0001fe;
+border: none;
+border-radius: 2%;
+color: #fff;
+cursor: pointer;
+font-size: 16px;
 }
 
 
 input[type="submit"]:hover {
-    background-color: #3700b3;
+background-color: #3700b3;
 }
 
 .hidden-edit {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgba(0, 0, 0, 0.5);
+display: none;
+position: fixed;
+z-index: 1000;
+left: 0;
+top: 0;
+width: 100%;
+height: 100%;
+overflow: auto;
+background-color: rgba(0, 0, 0, 0.5);
 }
 
 .edit-content {
-    background-color: #121212;
-    color: #aaa;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 50%;
-    border-radius: 10px;
+background-color: #121212;
+color: #aaa;
+margin: 15% auto;
+padding: 5%;
+border: 1px solid #888;
+width: 50%;
+border-radius: 2%;
 }
 
 .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-    cursor: pointer;
+color: #aaa;
+float: right;
+font-size: 28px;
+font-weight: bold;
+cursor: pointer;
+}
+
+.frame {
+padding: 15px;
+margin: 15px 0;
+border: 1px solid #ddd;
+border-radius: 4px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

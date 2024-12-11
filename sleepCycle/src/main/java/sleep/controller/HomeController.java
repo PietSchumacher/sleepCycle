@@ -52,8 +52,6 @@ public class HomeController {
         this.optimizationService = optimizationService;
     }
 
-
-
     @GetMapping("/")
     public String displayHomePage(Model model, HttpServletRequest request) {
         isLoggedIn(request, model, jwtGenerator);
@@ -82,9 +80,7 @@ public class HomeController {
             model.addAttribute("username", username);
             return "sessionForm";
         }
-        else {
-            return "loginPage";
-        }
+        return "loginPage";
     }
 
 
@@ -197,6 +193,4 @@ public class HomeController {
         model.addAttribute("login",isLoggedIn);
         return isLoggedIn;
     }
-
-
 }

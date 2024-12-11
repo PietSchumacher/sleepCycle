@@ -52,9 +52,9 @@ public class SleepPersonServiceImpl implements SleepPersonService {
     @Override
     public void deleteSleepPerson(Integer id){
         SleepPerson person = personRepository.findById((long) id).orElseThrow(() -> new SleepPersonNotFoundException("Person konnte nicht gelöscht werden!"));
-        personRepository.deleteById((long) id);
+        User user = person.getUser();
+        userRepository.delete(user);
     }
-
 
     @Override
     public SleepPersonDto updateSleepPerson(SleepPersonDto personDto, Integer id){
@@ -134,5 +134,4 @@ public class SleepPersonServiceImpl implements SleepPersonService {
         person.setWeight(personDto.getWeight());
         return person;
     }
-
 }

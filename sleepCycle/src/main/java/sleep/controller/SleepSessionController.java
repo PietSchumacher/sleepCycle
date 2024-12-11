@@ -47,10 +47,10 @@ public class SleepSessionController {
         this.personService = personService;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<SleepSessionDto> getSleepSession(@PathVariable Integer id) {
-        return ResponseEntity.ok(sessionService.getSleepSession(id));
-    }
+//    @GetMapping("{id}")
+//    public ResponseEntity<SleepSessionDto> getSleepSession(@PathVariable Integer id) {
+//        return ResponseEntity.ok(sessionService.getSleepSession(id));
+//    }
 
     @GetMapping("getByDate")
     @PreAuthorize( "isAuthenticated()")
@@ -96,6 +96,7 @@ public class SleepSessionController {
     public ResponseEntity<String> deleteSleepSession(@PathVariable("id") int id, HttpServletRequest request){
         String token = getJwtFromCookies(request);
         boolean isLoggedIn = token != null;
+
         try {
             if (token != null)
                 jwtGenerator.getUsernameFromJWT(token);

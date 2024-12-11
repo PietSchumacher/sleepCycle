@@ -2,26 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SleepCycle Startseite</title>
+    <title>Schlafoptimierung</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         .container {
             text-align: center;
         }
-        .frame {
-            padding: 15px;
-            margin: 15px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
     </style>
 </head>
 <body>
 
-<div class="brand-image">
-    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
-</div>
+<div th:insert="fragments/brandImage :: brandImage"></div>
 <div th:insert="fragments/navbar :: navbar"></div>
 
 <div class="container">
@@ -45,16 +36,34 @@
                 <span th:text="${cycleInMinutes != null ? #numbers.formatDecimal(6 * (cycleInMinutes / 60.0), 2, 2) : '/'}">/</span> Stunden
             </li>
         </ol>
-    </div>
     <p><strong>Bewertung der Schlafdauer:</strong> <span th:text="${durationMessage ?: 'Keine Bewertung verfügbar'}">DurationMessage</span></p>
     <p><strong>Info:</strong> <span th:text="${infoMessage ?: 'Keine weiteren Informationen'}">InfoMessage</span></p>
+    </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span>© 2024 SleepCycle. Alle Rechte vorbehalten.</span>
+<div class="container">
+    <div class="frame">
+        <h3>Tipps zur Schlafoptimierung</h3>
+        <p>
+            Der Schlaf kann auf verschiedene Weise optimiert werden, falls sich deine Ergebnisse und Bewertungen über einen längeren Zeitraum nicht positiv entwickeln.
+            Neben der reinen Schlafdauer gibt es weitere Faktoren, die du anpassen kannst, um deine Schlafqualität zu verbessern:
+        </p>
+        <ul>
+            <li>Schlafumgebung: Achte auf Dunkelheit, Ruhe, angenehme Temperatur und angenehme Bettmaterialien.</li>
+            <li>Regelmäßige Schlafzeiten: Versuche, jeden Tag zur gleichen Zeit ins Bett zu gehen und aufzustehen.</li>
+            <li>Entspannte Aktivitäten vor dem Schlafengehen: Zum Beispiel Lesen, Meditieren oder andere beruhigende Tätigkeiten.</li>
+            <li>Reduzierte Bildschirmzeit: Vermeide die Nutzung von Bildschirmen 1–2 Stunden vor dem Schlafen.</li>
+            <li>Ernährung: Verzichte auf koffeinhaltige Getränke und schweres Essen am Abend/Nacht.</li>
+            <li>Bewegung im Alltag: Regelmäßige körperliche Aktivität kann einen positiven Einfluss auf deinen Schlaf haben.</li>
+        </ul>
+        <p>
+            Sollten sich Schlafprobleme dennoch dauerhaft halten, ist es wichtig, einen Arzt aufzusuchen und die Probleme offen anzusprechen.
+        </p>
     </div>
-</footer>
+</div>
+
+<div th:insert="fragments/footer :: footer"></div>
+
 
 </body>
 </html>

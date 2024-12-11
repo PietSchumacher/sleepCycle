@@ -2,14 +2,11 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>SleepCycle Startseite</title>
+    <title>Profil</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         .container {
             text-align: center;
-        }
-        .fomularContainer{
-            height: 70vh;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -63,18 +60,66 @@
                 alert(`Profil-Speicherung fehlgeschlagen. Bitte überprüfe deine Angaben.`);
             }
         }
+
+        async function deletePerson(event){
+            event.preventDefault();
+
+            if (!confirm('Bist du dir sicher?')) {
+                return;
+            }
+
+            const form = document.getElementById('deleteForm');
+
+            const csrfToken = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('XSRF-TOKEN='))
+                ?.split('=')[1];
+
+            const personId = document.getElementById("personId").value;
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/person/${personId}/delete`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-XSRF-Token': csrfToken
+                    },
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP-Fehler! Status: ${response.status}`);
+                }
+                else {
+                    Swal.fire({
+                        title: 'Erfolgreich!',
+                        text: 'Dein Profil wurde erfolgreich gelöscht!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/';
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Fehler beim Ändern des Profils:', error);
+                alert(`Profil-Löschung fehlgeschlagen. Bitte versuche es später erneut.`);
+            }
+        }
     </script>
 </head>
 <body>
 
-<div class="brand-image">
-    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
-</div>
+<div th:insert="fragments/brandImage :: brandImage"></div>
 <div th:insert="fragments/navbar :: navbar"></div>
 
 <div class="container">
     <h1>Willkommen, <span th:text="${username}">Benutzer</span>!</h1>
     <h3>Hier kannst du deine Daten ändern:</h3>
+</div>
+
+<div class="container">
     <div class="fomularContainer">
         <div class="login-box">
             <form id="profileForm" onsubmit="submitForm(event)">
@@ -98,11 +143,17 @@
     </div>
 </div>
 
-<footer class="footer">
-    <div class="container">
-        <span>© 2024 SleepCycle. Alle Rechte vorbehalten.</span>
+<div class="container">
+    <div class="fomularContainer">
+        <div class="login-box">
+            <form id="deleteForm" onsubmit="deletePerson(event)">
+                <input type="submit" value="Profil löschen" style="width: auto">
+            </form>
+        </div>
     </div>
-</footer>
+</div>
+
+<div th:insert="fragments/footer :: footer"></div>
 
 </body>
 </html>

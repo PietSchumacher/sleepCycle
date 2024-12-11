@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Overview</title>
+    <title>Überblick</title>
     <link rel="stylesheet" href="/css/styles.css">
     <style>
         .container {
@@ -12,7 +12,16 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+
         const createCharts = (sessions) => {
+
+            if (Chart.getChart("evaluationChart")) {
+                Chart.getChart("evaluationChart")?.destroy();
+            }
+
+            if (Chart.getChart("durationChart")) {
+                Chart.getChart("durationChart")?.destroy();
+            }
 
             const groupedData = sessions.reduce((acc, session) => {
                 const date = new Date(session.date).toLocaleDateString("de-DE");
@@ -197,8 +206,12 @@
 
             const searchResults = document.getElementById("searchResults");
             const sessionsTableBody = document.getElementById("sessionsTableBody");
+            const headingEvaluation = document.getElementById("headingSleepEvaluation");
+            const headingDuration = document.getElementById("headingSleepDuration");
 
             searchResults.style.display = "none";
+            headingEvaluation.style.display = "none";
+            headingDuration.style.display = "none";
             sessionsTableBody.innerHTML = "";
             const csrfToken = document.cookie
                 .split('; ')
@@ -236,6 +249,8 @@
                         sessionsTableBody.appendChild(row);
                     });
                     searchResults.style.display = "block";
+                    headingEvaluation.style.display = "flex";
+                    headingDuration.style.display = "flex";
 
                     // Charts aktualisieren
                     createCharts(data.content);
@@ -249,36 +264,40 @@
     </script>
 </head>
 <body>
-<div class="brand-image">
-    <img src="/images/hsv.png" alt="Logo" class="img-fluid" style="max-height: 300px;">
-</div>
+<div th:insert="fragments/brandImage :: brandImage"></div>
 <div th:insert="fragments/navbar :: navbar"></div>
 
 <div class="container" style="background-color: white; color:#555555">
-        <div class="split-container">
-            <h3 th:text="${totalSessions} + ' erfasste Schlaf-Sessions'"></h3>
-     </div>
-     <div class="split-container">
-         <h3 th:text="${totalSleepHours} + ' erfasste Stunden im Schlaf'"></h3>
-      </div>
+    <div class="split-container">
+        <h3 th:text="${totalSessions} + ' erfasste Schlaf-Sessions'"></h3>
+    </div>
+    <div class="split-container">
+        <h3 th:text="${totalSleepHours} + ' erfasste Stunden im Schlaf'"></h3>
+    </div>
 </div>
 
   <!-- Frame for Averages -->
     <div class="container">
         <div class="triple-split-container">
-            <h3>Mittelwerte (letzte 7 Tage)</h3>
-            <p>Schlafdauer: <span th:text="${avg7DaysDuration}">0</span> Stunden</p>
-            <p>Bewertung: <span th:text="${avg7DaysEvaluation}">N/A</span></p>
+            <div class="frame">
+                <h3>Mittelwerte (letzte 7 Tage)</h3>
+                <p>Schlafdauer: <span th:text="${avg7DaysDuration}">0</span> Stunden</p>
+                <p>Bewertung: <span th:text="${avg7DaysEvaluation}">N/A</span></p>
+            </div>
         </div>
         <div class="triple-split-container">
-            <h3>Mittelwerte (letzter Monat)</h3>
-            <p>Schlafdauer: <span th:text="${avgMonthDuration}">0</span> Stunden</p>
-            <p>Bewertung: <span th:text="${avgMonthEvaluation}">N/A</span></p>
+            <div class="frame">
+                <h3>Mittelwerte (letzter Monat)</h3>
+                <p>Schlafdauer: <span th:text="${avgMonthDuration}">0</span> Stunden</p>
+                <p>Bewertung: <span th:text="${avgMonthEvaluation}">N/A</span></p>
+            </div>
         </div>
         <div class="triple-split-container">
-            <h3>Mittelwerte (letztes Jahr)</h3>
-            <p>Schlafdauer: <span th:text="${avgYearDuration}">0</span> Stunden</p>
-            <p>Bewertung: <span th:text="${avgYearEvaluation}">N/A</span></p>
+            <div class="frame">
+                <h3>Mittelwerte (letztes Jahr)</h3>
+                <p>Schlafdauer: <span th:text="${avgYearDuration}">0</span> Stunden</p>
+                <p>Bewertung: <span th:text="${avgYearEvaluation}">N/A</span></p>
+            </div>
         </div>
     </div>
 
@@ -300,7 +319,7 @@
 <!-- Search Results -->
 <div style="display: none;" id="searchResults">
     <div class="container" style="flex:0.5;"><h3>Sessions</h3></div>
-    <div class="container" style="flex:0;">
+    <div class="container" style="flex:0; overflow-x: auto; width: 100%;">
             <table>
                 <thead>
                 <tr>
@@ -319,11 +338,11 @@
 </div>
 
 <!-- Graphics -->
-<div class="container" style="flex:0.5;"><h3>Verlauf der Bewertungen</h3></div>
+<div class="container" style="flex:0.5; display: none;" id="headingSleepEvaluation"><h3>Verlauf der Bewertungen</h3></div>
 <div class="container" style="width:70%;">
     <canvas id="evaluationChart"></canvas>
 </div>
-<div class="container" style="flex:0.5;"><h3>Verlauf der Schlafdauer</h3></div>
+<div class="container" id="headingSleepDuration" style="flex:0.5; display: none;"><h3>Verlauf der Schlafdauer</h3></div>
 <div class="container" style="width:70%;">
     <canvas id="durationChart"></canvas>
 </div>
@@ -349,5 +368,8 @@
         </form>
     </div>
 </div>
+
+<div th:insert="fragments/footer :: footer"></div>
+
 </body>
 </html>

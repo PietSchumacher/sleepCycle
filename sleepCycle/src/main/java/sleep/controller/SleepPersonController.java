@@ -1,7 +1,9 @@
 package sleep.controller;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +31,10 @@ public class SleepPersonController {
         this.userRepository = userRepository;
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<SleepPersonDto> getSleepPerson(@PathVariable Integer id) {
-        return ResponseEntity.ok(personService.getSleepPerson(id));
-    }
+//    @GetMapping("{id}")
+//    public ResponseEntity<SleepPersonDto> getSleepPerson(@PathVariable Integer id) {
+//        return ResponseEntity.ok(personService.getSleepPerson(id));
+//    }
 
     @PostMapping("create")
     public ResponseEntity<SleepPersonDto> createSleepPerson(@RequestBody SleepPersonDto person){
@@ -59,23 +61,21 @@ public class SleepPersonController {
     }
 
     @PostMapping("{id}/delete")
-    public ResponseEntity<String> deleteSleepPerson(@PathVariable("id") int personId){
+    public ResponseEntity<String> deleteSleepPerson(@PathVariable("id") int personId, HttpServletResponse response){
         personService.deleteSleepPerson(personId);
+        Cookie cookie = new Cookie("auth_token", null);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
         return ResponseEntity.ok("Person wurde erfolgreich gelöscht");
     }
 
-    @GetMapping("{id}/getSessions")
-    public ResponseEntity<SleepSessionResponse> getAllSessions(@PathVariable Integer id,
-                                               @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
-                                               @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
-        return new ResponseEntity<>(personService.getAllSessionsByPersonId(id, pageNo, pageSize),HttpStatus.OK);
-    }
-
-
-
-
-
-
-
-
+//    @GetMapping("{id}/getSessions")
+//    public ResponseEntity<SleepSessionResponse> getAllSessions(@PathVariable Integer id,
+//                                               @RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+//                                               @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize){
+//        return new ResponseEntity<>(personService.getAllSessionsByPersonId(id, pageNo, pageSize),HttpStatus.OK);
+//    }
 }
