@@ -31,12 +31,13 @@
         async function submitForm(event) {
             event.preventDefault();
 
-            const form = document.getElementById('sessionForm');
-            const formData = new FormData(form);
-            const jsonData = {};
-            formData.forEach((value, key) => {
-                jsonData[key] = value;
-            });
+            const newSession = {
+                date: document.getElementById("date").value,
+                startTime: new Date(document.getElementById("startTime").value).toISOString(),
+                endTime: new Date(document.getElementById("endTime").value).toISOString(),
+                cycles: document.getElementById("cycles").value,
+                personalEvaluation: document.getElementById("personalEvaluation").value
+            };
 
             const csrfToken = document.cookie
                 .split('; ')
@@ -50,7 +51,7 @@
                         'Content-Type': 'application/json',
                         'X-XSRF-Token': csrfToken
                     },
-                    body: JSON.stringify(jsonData),
+                    body: JSON.stringify(newSession),
                     credentials: 'include'
                 });
 

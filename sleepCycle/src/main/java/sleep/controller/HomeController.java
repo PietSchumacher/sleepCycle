@@ -2,6 +2,8 @@ package sleep.controller;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,8 +35,14 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * Controller for displaying the appropriate templates to the right URLs.
+ *
+ */
 @Controller
 public class HomeController {
+
+    private static final Logger logger = LoggerFactory.getLogger(HomeController.class);
 
     private final UserRepository userRepository;
     private JwtGenerator jwtGenerator;
@@ -52,49 +60,83 @@ public class HomeController {
         this.optimizationService = optimizationService;
     }
 
+    /**
+     * Displays the home page.
+     * @param model Model object to pass data to the view.
+     * @param request HTTP request containing user session details.
+     * @return Name of the home page template.
+     */
     @GetMapping("/")
     public String displayHomePage(Model model, HttpServletRequest request) {
+        logger.info("Gebe das Homepage-Template zurück");
         isLoggedIn(request, model, jwtGenerator);
         return "home";
     }
 
+    /**
+     * Displays the login page.
+     * @param request HTTP request containing user session details.
+     * @param model Model object to pass data to the view.
+     * @return Name of the login page template.
+     */
     @GetMapping("/login")
     public String displayLoginPage(HttpServletRequest request, Model model) {
+        logger.info("Gebe das Login-Template zurück");
         isLoggedIn(request, model, jwtGenerator);
         return "loginPage";
     }
 
+    /**
+     * Displays the registration page.
+     * @param request HTTP request containing user session details.
+     * @param model Model object to pass data to the view.
+     * @return Name of the registration page template.
+     */
     @GetMapping("/register")
     public String displayRegisterPage(HttpServletRequest request, Model model) {
+        logger.info("Gebe das Registrierungs-Template zurück");
         isLoggedIn(request, model, jwtGenerator);
         return "register";
     }
 
+    /**
+     * Displays the page for gathering sleep session information.
+     * @param model Model object to pass data to the view.
+     * @param request HTTP request containing user session details.
+     * @return Template for session input or login page if not authenticated.
+     */
     @GetMapping("/gatherSleepSessions")
     @PreAuthorize("isAuthenticated()")
     public String displayGatherSessionsPage(Model model, HttpServletRequest request) {
+        logger.info("Versuche das Erfassungs-Template für Sleep Sessions zurück zu geben");
         boolean loggedIn = isLoggedIn(request, model, jwtGenerator);
-        String token = getJwtFromCookies(request);
         if (loggedIn) {
-            String username = jwtGenerator.getUsernameFromJWT(token);
-            model.addAttribute("username", username);
+            User user = getAuthUser(request, jwtGenerator, userRepository);
+            model.addAttribute("username", user.getUsername());
+            logger.info("Authentifizierung erfolgreich. Gebe das Erfassungs-Template zurück");
             return "sessionForm";
         }
+        logger.info("User noch nicht angemeldet, leite ihn auf die Loginseite");
         return "loginPage";
     }
 
-
+    /**
+     * Displays the user's personal sleep session overview.
+     * @param request HTTP request containing user session details.
+     * @param model Model object to pass data to the view.
+     * @return Template for the personal overview or login page if not authenticated.
+     */
     @GetMapping("/personalOverview")
     @PreAuthorize("isAuthenticated()")
     public String displayOverview(HttpServletRequest request, Model model) {
+        logger.info("Versuche das Übersichts-Template für Sleep Sessions zurück zu geben");
         boolean loggedIn = isLoggedIn(request, model, jwtGenerator);
-        String token = getJwtFromCookies(request);
         if (loggedIn) {
-            String username = jwtGenerator.getUsernameFromJWT(token);
-            User user = userRepository.findByUsername(username).get();
+            logger.info("User ist angemeldet, ermittle Daten für das Übersichts-Template ...");
+            User user = getAuthUser(request, jwtGenerator, userRepository);
             SleepPerson person = user.getPerson();
             model.addAttribute("person", person);
-            model.addAttribute("username", username);
+            model.addAttribute("username", user.getUsername());
             // set totalSessions and totalSleepHours
             Pageable pageable;
             List<SleepSessionDto> sessions = personService.getAllSessionsByPersonId(person.getId(), 0, 10).getContent();
@@ -128,35 +170,46 @@ public class HomeController {
 
             return "personalOverview";
         }
-        else {
-            return "loginPage";
-        }
+
+        logger.info("User noch nicht angemeldet, leite ihn auf die Loginseite");
+        return "loginPage";
     }
 
+    /**
+     * Displays the user's profile page.
+     * @param model Model object to pass data to the view.
+     * @param request HTTP request containing user session details.
+     * @return Template for the profile page or login page if not authenticated.
+     */
     @GetMapping("/profile")
     @PreAuthorize("isAuthenticated()")
     public String displayProfilePage(Model model, HttpServletRequest request) {
         boolean loggedIn = isLoggedIn(request, model, jwtGenerator);
-        String token = getJwtFromCookies(request);
         if (loggedIn) {
-            String username = jwtGenerator.getUsernameFromJWT(token);
-            User user = userRepository.findByUsername(username).get();
+            logger.info("User ist angemeldet, zeige das Profil");
+            User user = getAuthUser(request, jwtGenerator, userRepository);
             SleepPerson person = user.getPerson();
-            model.addAttribute("username", username);
+            model.addAttribute("username", user.getUsername());
             model.addAttribute("person", person);
             return "profile";
         }
+        logger.info("User noch nicht angemeldet, leite ihn auf die Loginseite");
         return "loginPage";
     }
 
+    /**
+     * Displays the user's optimization page.
+     * @param model Model object to pass data to the view.
+     * @param request HTTP request containing user session details.
+     * @return Template for the optimization page or login page if not authenticated.
+     */
     @GetMapping("/optimization")
     @PreAuthorize("isAuthenticated()")
     public String displayOptimizationPage(Model model, HttpServletRequest request) {
         boolean loggedIn = isLoggedIn(request, model, jwtGenerator);
-        String token = getJwtFromCookies(request);
         if (loggedIn) {
-            String username = jwtGenerator.getUsernameFromJWT(token);
-            User user = userRepository.findByUsername(username).get();
+            logger.info("User ist angemeldet, zeige die Optimierungsseite");
+            User user = getAuthUser(request, jwtGenerator, userRepository);
             SleepPerson person = user.getPerson();
             OptimizationResponse response = optimizationService.getOptimalDurationForOneCycle(person);
             model.addAttribute("name", person.getName());
@@ -165,9 +218,11 @@ public class HomeController {
             model.addAttribute("infoMessage",response.getMessage());
             return "optimization";
         }
+        logger.info("User noch nicht angemeldet, leite ihn auf die Loginseite");
         return "loginPage";
     }
 
+    // Helper methods
 
     static String getJwtFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
@@ -193,4 +248,19 @@ public class HomeController {
         model.addAttribute("login",isLoggedIn);
         return isLoggedIn;
     }
+
+    static User getAuthUser(HttpServletRequest request, JwtGenerator jwtGenerator, UserRepository userRepository) {
+        try {
+            String token = getJwtFromCookies(request);
+            if (token != null) {
+                String username = jwtGenerator.getUsernameFromJWT(token);
+                return userRepository.findByUsername(username).orElse(null);
+            }
+            return null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
 }

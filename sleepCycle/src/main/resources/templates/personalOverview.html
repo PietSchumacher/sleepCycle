@@ -85,6 +85,30 @@
             });
         };
 
+
+        const formatDateTimeLocal = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0'); // Monat ist 0-basiert
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+
+        const parseDate = (dateString) => {
+            const [datePart, timePart] = dateString.split(',');
+            const [day, month, year] = datePart.trim().split('.').map(Number);
+
+            const parsedYear = year < 100 ? 2000 + year : year;
+
+            if (timePart) {
+                const [hours, minutes] = timePart.trim().split(':').map(Number);
+                return new Date(parsedYear, month - 1, day, hours, minutes);
+            }
+
+            return new Date(parsedYear, month-1, day,0,0);
+        };
+
         document.addEventListener("DOMContentLoaded", () => {
             const hiddenEdit = document.getElementById("hiddenEdit");
             const closeEdit = document.getElementById("closeEdit");
@@ -96,15 +120,23 @@
                 if (!row) return;
 
                 const cells = row.children;
-                document.getElementById("sessionId").value = row.dataset.id;
-                document.getElementById("editDate").value = cells[0].textContent;
-                document.getElementById("editStartTime").value = cells[1].textContent;
-                document.getElementById("editEndTime").value = cells[2].textContent;
-                document.getElementById("editCycles").value = cells[4].textContent;
-                document.getElementById("editEvaluation").value = cells[5].textContent;
 
-                hiddenEdit.style.display = "block";
+                document.getElementById("sessionId").value = row.dataset.id;
+
+                const date = parseDate(cells[0].textContent.trim());
+                document.getElementById("editDate").value = formatDateTimeLocal(date).split('T')[0];
+
+                const startTime = parseDate(cells[1].textContent.trim());
+                const endTime = parseDate(cells[2].textContent.trim());
+                document.getElementById("editStartTime").value = formatDateTimeLocal(startTime);
+                document.getElementById("editEndTime").value = formatDateTimeLocal(endTime);
+
+                document.getElementById("editCycles").value = cells[4].textContent.trim() || '';
+                document.getElementById("editEvaluation").value = cells[5].textContent.trim();
+
+                document.getElementById("hiddenEdit").style.display = "block";
             });
+
 
             closeEdit.addEventListener("click", () => {
                 hiddenEdit.style.display = "none";
@@ -115,9 +147,9 @@
                 const sessionId = document.getElementById("sessionId").value;
 
                 const updatedSession = {
-                    date: document.getElementById("editDate").value,
-                    startTime: document.getElementById("editStartTime").value,
-                    endTime: document.getElementById("editEndTime").value,
+                    date: new Date(document.getElementById("editDate").value).toISOString().split('T')[0], // Nur das Datum in UTC
+                    startTime: new Date(document.getElementById("editStartTime").value).toISOString(), // Startzeit in UTC
+                    endTime: new Date(document.getElementById("editEndTime").value).toISOString(),
                     cycles : document.getElementById("editCycles").value,
                     personalEvaluation: document.getElementById("editEvaluation").value
                 };
@@ -177,9 +209,6 @@
                 }
             });
         });
-
-
-        // Erstmal austesten
 
 
         const formatDateTime = (timeString, includeTime = true) => {
@@ -252,7 +281,6 @@
                     headingEvaluation.style.display = "flex";
                     headingDuration.style.display = "flex";
 
-                    // Charts aktualisieren
                     createCharts(data.content);
                 } else {
                     alert("Keine Sessions gefunden.");
