@@ -104,7 +104,7 @@ public class OptimizationServiceImpl implements OptimizationService {
 
         logger.info("Generiere die Nachricht für die Bewertung der durchschnittlichen Dauer für {}",avgDuration);
         if (avgDuration > 21600000 && avgDuration < 33000000) {
-            response.setDurationMessage("Deine durchschnittliche Schlafdauer (" + avgDuration / MILLISECONDS_DIVISOR + " min) liegt liegt im Normalbereich");
+            response.setDurationMessage("Deine durchschnittliche Schlafdauer (" + avgDuration / MILLISECONDS_DIVISOR + " min) liegt im Normalbereich");
         }
         else if (avgDuration < 21600000) {
             response.setDurationMessage("Deine durchschnittliche Schlafdauer (" + avgDuration / MILLISECONDS_DIVISOR + " min) liegt unter dem Normalbereich. Du solltest versuchen mehr zu schlafen!");
