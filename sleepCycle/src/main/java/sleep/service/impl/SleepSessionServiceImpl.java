@@ -2,10 +2,7 @@ package sleep.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sleep.controller.SleepSessionController;
-import sleep.dto.SleepPersonDto;
 import sleep.dto.SleepSessionDto;
 import sleep.exceptions.SleepPersonNotFoundException;
 import sleep.exceptions.SleepSessionNotFoundException;
@@ -14,8 +11,6 @@ import sleep.models.SleepSession;
 import sleep.repository.SleepPersonRepository;
 import sleep.repository.SleepSessionRepository;
 import sleep.service.SleepSessionService;
-
-import java.util.List;
 
 /**
  * Implementation of SleepSessionService to manage SleepSession entities.

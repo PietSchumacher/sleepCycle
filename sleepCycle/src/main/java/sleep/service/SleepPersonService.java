@@ -1,11 +1,9 @@
 package sleep.service;
 
 import sleep.dto.SleepPersonDto;
-import sleep.dto.SleepSessionDto;
 import sleep.dto.SleepSessionResponse;
 
 import java.util.Date;
-import java.util.List;
 
 public interface SleepPersonService {
     SleepPersonDto getSleepPerson(Integer id);

@@ -3,7 +3,6 @@ package sleep.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,13 +20,9 @@ import sleep.security.JwtGenerator;
 import sleep.service.SleepPersonService;
 import sleep.service.SleepSessionService;
 
-import java.awt.print.Pageable;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import static sleep.controller.HomeController.*;
 
@@ -219,7 +214,7 @@ public class SleepSessionController {
         setAttributesForSessionDto(session);
         User user = getAuthUser(request, jwtGenerator, userRepository);
         SleepSession sessionObject = sleepSessionRepository.findById(Long.valueOf(session.getId())).orElse(null);
-        if (sessionObject != null & user != null && session != null && sessionObject.getPerson().getId() != user.getPerson().getId()) {
+        if (sessionObject != null & user != null && session != null && sessionObject.getPerson().getId() == user.getPerson().getId()) {
             return true;
         } else if (user != null && session != null){
             session.setPersonId(user.getPerson().getId());

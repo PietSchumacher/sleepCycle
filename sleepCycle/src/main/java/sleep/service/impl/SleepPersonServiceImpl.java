@@ -2,16 +2,15 @@ package sleep.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import sleep.dto.SleepSessionResponse;
 import sleep.dto.SleepPersonDto;
 import sleep.dto.SleepSessionDto;
+import sleep.dto.SleepSessionResponse;
 import sleep.exceptions.SleepPersonNotFoundException;
 import sleep.models.SleepPerson;
 import sleep.models.SleepSession;
@@ -23,9 +22,6 @@ import sleep.service.SleepPersonService;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**

@@ -6,8 +6,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import sleep.dto.SleepPersonDto;
 import sleep.dto.SleepSessionDto;
 import sleep.exceptions.SleepPersonNotFoundException;
 import sleep.exceptions.SleepSessionNotFoundException;
@@ -21,7 +19,8 @@ import sleep.repository.UserRepository;
 import java.util.Date;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -80,7 +79,7 @@ class SleepSessionServiceImplTest {
         SleepSessionDto sessionDto = sleepSessionService.createSleepSession(testSessionDto);
         SleepSessionDto sessionDto1 = sleepSessionService.mapToDto(testSession);
         assertEquals(sessionDto1, sessionDto1);
-        }
+    }
 
     @Test
     void createSleepSessionSleepThrowsPersonNotFoundException() {
@@ -123,15 +122,15 @@ class SleepSessionServiceImplTest {
             return invocation.getArgument(0);
         });
 
-        SleepSessionDto sessionDto = sleepSessionService.updateSleepSession(updateSessionDto,0);
+        SleepSessionDto sessionDto = sleepSessionService.updateSleepSession(updateSessionDto, 0);
         assertEquals(sessionDto, updateSessionDto);
-        }
+    }
 
     @Test
     void updateSleepSessionThrowsSleepSessionNotFoundException() {
         when(sessionRepository.findById(0L)).thenReturn(Optional.empty());
 
-        assertThrows(SleepSessionNotFoundException.class, () -> sleepSessionService.updateSleepSession(testSessionDto,0), "Session konnte nicht geupdated werden!");
+        assertThrows(SleepSessionNotFoundException.class, () -> sleepSessionService.updateSleepSession(testSessionDto, 0), "Session konnte nicht geupdated werden!");
     }
 
     @Test
@@ -139,7 +138,7 @@ class SleepSessionServiceImplTest {
         when(sessionRepository.findById(0L)).thenReturn(Optional.ofNullable(testSession));
         when(personRepository.findById(0L)).thenReturn(Optional.empty());
 
-        assertThrows(SleepPersonNotFoundException.class, () -> sleepSessionService.updateSleepSession(testSessionDto,0), "Eine zutreffende Person konnte nicht gefunden werden");
+        assertThrows(SleepPersonNotFoundException.class, () -> sleepSessionService.updateSleepSession(testSessionDto, 0), "Eine zutreffende Person konnte nicht gefunden werden");
     }
 
     @Test

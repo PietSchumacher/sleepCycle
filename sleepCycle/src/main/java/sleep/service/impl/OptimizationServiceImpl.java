@@ -1,13 +1,12 @@
 package sleep.service.impl;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import sleep.controller.SleepSessionController;
 import sleep.models.SleepPerson;
 import sleep.models.SleepSession;
 import sleep.repository.SleepPersonRepository;
@@ -30,6 +29,7 @@ public class OptimizationServiceImpl implements OptimizationService {
      * Inner class to represent the response of the optimization process.
      */
     @NoArgsConstructor
+    @AllArgsConstructor
     @Getter
     @Setter
     public static class OptimizationResponse {

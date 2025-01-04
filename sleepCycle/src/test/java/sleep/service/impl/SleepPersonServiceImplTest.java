@@ -1,12 +1,10 @@
 package sleep.service.impl;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,7 +17,6 @@ import sleep.models.User;
 import sleep.repository.SleepPersonRepository;
 import sleep.repository.SleepSessionRepository;
 import sleep.repository.UserRepository;
-import sleep.service.SleepPersonService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,8 +43,11 @@ class SleepPersonServiceImplTest {
     private SleepPersonServiceImpl sleepPersonService;
 
     private User testUser;
+
     private SleepPersonDto testPersonDto;
+
     private SleepPerson testPerson;
+
     private SleepSession testSession;
 
     @BeforeEach

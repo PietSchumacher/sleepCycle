@@ -11,18 +11,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import sleep.dto.AuthResponseDto;
 import sleep.dto.LoginDto;
 import sleep.dto.RegisterDto;
-import sleep.models.Role;
-import sleep.models.User;
 import sleep.repository.RoleRepository;
 import sleep.repository.UserRepository;
 import sleep.security.JwtGenerator;
 import sleep.service.AuthService;
-
-import java.util.Collections;
 
 /**
  * Rest Controller for managing authentication.

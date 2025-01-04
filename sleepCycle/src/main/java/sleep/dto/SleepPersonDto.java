@@ -1,8 +1,6 @@
 package sleep.dto;
 
 import lombok.Data;
-import sleep.models.SleepSession;
-import sleep.models.User;
 
 import java.util.Date;
 import java.util.List;

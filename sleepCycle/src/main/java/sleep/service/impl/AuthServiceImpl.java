@@ -2,18 +2,13 @@ package sleep.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sleep.controller.SleepSessionController;
 import sleep.dto.RegisterDto;
 import sleep.dto.SleepPersonDto;
 import sleep.models.Role;
-import sleep.models.SleepPerson;
 import sleep.models.User;
 import sleep.repository.RoleRepository;
-import sleep.repository.SleepPersonRepository;
 import sleep.repository.UserRepository;
 import sleep.service.AuthService;
 import sleep.service.SleepPersonService;
